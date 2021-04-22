@@ -1,0 +1,21 @@
+{
+  "name": "electron-lambda-invoker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^12.0.5",
+    "electron-reload": "^1.5.0",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb-base": "^14.2.1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.890.0"
+  }
+}
