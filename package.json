@@ -5,12 +5,17 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "build:osx": "npm run build:app && npm run build:dmg",
+    "build:app": "electron-packager . \"Lambda Invoker\" --icon=icon.icns --overwrite",
+    "build:dmg": "rm -f ./build/Lambda\\ Invoker.dmg && electron-installer-dmg Lambda\\ Invoker-darwin-x64/Lambda\\ Invoker.app \"Lambda Invoker\" --out ./build/ --title \"Lambda Invoker\" --icon ./icon.png && rm -rf ./Lambda\\ Invoker-darwin-x64",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Juan Víctor Jiménez Corzo",
   "license": "ISC",
   "devDependencies": {
     "electron": "^12.0.5",
+    "electron-installer-dmg": "^3.0.0",
+    "electron-packager": "^15.2.0",
     "electron-reload": "^1.5.0",
     "eslint": "^7.24.0",
     "eslint-config-airbnb-base": "^14.2.1"
