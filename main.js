@@ -2,12 +2,16 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const events = require("./events");
 
-require("electron-reload")(__dirname);
+require("electron-reload")(__dirname, {
+  electron: path.join(__dirname, "node_modules", ".bin", "electron"),
+});
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
+    minWidth: 600,
     height: 600,
+    icon: __dirname + "/icon.icns",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -18,8 +22,6 @@ function createWindow() {
   win.loadFile("view/home/index.html");
 
   win.setMenu(null);
-
-  win.openDevTools();
 }
 
 app.whenReady().then(() => {
@@ -33,7 +35,5 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
+  app.quit();
 });

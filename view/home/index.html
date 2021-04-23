@@ -25,6 +25,30 @@
       .key {
         color: red;
       }
+
+      .modal {
+        display: none;
+        background: rgba(0, 0, 0, 0.3);
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 999;
+      }
+      .modal .modal-body {
+        background: white;
+        position: relative;
+        top: 20%;
+        max-width: 600px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        border-radius: 8px;
+      }
+      .show {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -37,8 +61,12 @@
               <option disabled selected value="-1">Select profile</option>
             </select>
           </div>
+          <div class="btn-group" style="margin-left: 20px;">
+            <span class="btn form-control" style="width: auto;margin-right: 2px;">Endpoint:</span>
+            <input id="endpoint" class="form-control" type="text" placeholder="AUTO" style="width: 300px;">
+          </div>
 
-          <button class="btn btn-default pull-right">
+          <button id="newModal" class="btn btn-large btn-default pull-right">
             <span class="icon icon-plus"></span>
           </button>
         </div>
@@ -47,15 +75,25 @@
       <div class="window-content">
         <div class="pane-group">
           <div class="pane-sm sidebar">
-            <nav class="nav-group">
-              <h5 class="nav-group-title">Guardados</h5>
-              <a class="nav-group-item active">OrderRoutes</a>
-              <a class="nav-group-item">AnotherLambda</a>
+            <nav id="functionNames" class="nav-group">
+              <h5 class="nav-group-title">Saved</h5>
+              
+              <a
+                class="nav-group-item"
+                function-id="OrderRoutesOtherPayload"
+                function-name="OrderRoute-dev-main"
+                function-region="us-west-1"
+                >OrderRoutes</a
+              >
             </nav>
           </div>
           <div class="pane">
-            <div class="padded-more">
+            <div id="noSelectedFunction" class="padded-more" style="display: flex; height: 100%; justify-content: center; align-items:center;">
+              <h3>Select a function to invoke</h3>
+            </div>
+            <div id="withSelectedFunction" class="padded-more" style="display: none;">
               <form id="mainForm">
+                <input id="selectedFunction" type="hidden" value="" />
                 <div class="form-group">
                   <button
                     id="invoke"
@@ -76,8 +114,8 @@
                   class="form-group"
                   style="width: 50%; float: left; padding-right: 4px"
                 >
-                  <label>Request Type</label>
-                  <select name="request-type" class="form-control">
+                  <label>Invocation Type</label>
+                  <select name="invocation-type" class="form-control">
                     <option value="RequestResponse">RequestResponse</option>
                     <option value="Event">Event</option>
                     <option value="DryRun">DryRun</option>
@@ -88,7 +126,11 @@
                   style="width: 50%; float: left; padding-left: 4px"
                 >
                   <label>Response Type</label>
-                  <select id="responseType" class="form-control">
+                  <select
+                    id="responseType"
+                    name="responseType"
+                    class="form-control"
+                  >
                     <option value="json">JSON</option>
                     <option value="raw">Raw</option>
                   </select>
@@ -104,15 +146,60 @@
                   padding: 2px 8px;
                 "
               >
-                <pre id="response" style="margin: 0; white-space: pre-wrap">
-Press Invoke button</pre
+                <pre
+                  id="response"
+                  style="
+                    margin: 0;
+                    white-space: pre-wrap;
+                    user-select: text;
+                    cursor: text;
+                  "
+                ></pre
                 >
               </div>
             </div>
           </div>
         </div>
       </div>
-      <footer class="toolbar toolbar-footer"></footer>
+      <footer class="toolbar toolbar-footer">
+        <span id="status" style="padding: 0 8px">Idle</span>
+      </footer>
+    </div>
+    <div id="modal" class="modal">
+      <div class="modal-body padded-more">
+        <input id="modalFunctionId" type="hidden" value="" />
+        <div class="form-group" style="width: 50%;float: left; padding-right: 4px">
+          <label>Function Name</label>
+          <input id="modalFunctionName" type="text" class="form-control"></input>
+        </div>
+        <div class="form-group" style="width: 50%;float: left; padding-left: 4px">
+          <label>Function Region</label>
+          <input id="modalFunctionRegion" type="text" class="form-control"></input>
+        </div>
+        <button
+          id="deleteFunction"
+          type="button"
+          class="btn btn-warning"
+        >
+          Eliminar
+        </button>
+        <button
+          id="saveFunction"
+          type="button"
+          class="btn btn-primary pull-right"
+        >
+          Guardar
+        </button>
+        <button
+          id="closeModal"
+          type="button"
+          class="btn btn-default pull-right"
+          style="margin-right: 8px"
+        >
+          Cerrar
+        </button>
+        <div style="clear: both"></div>
+      </div>
     </div>
     <!-- Javascript -->
     <script src="renderer.js"></script>

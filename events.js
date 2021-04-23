@@ -4,13 +4,6 @@ const fs = require("fs");
 const homedir = require("os").homedir();
 
 const attachEvents = (win) => {
-  /* ipcMain.on("toMain", (event, args) => {
-    if (args)
-      fs.readdir("/", (error, data) => {
-        win.webContents.send("fromMain", data);
-      });
-  }); */
-
   ipcMain.on("get-profiles", (event, args) => {
     fs.readFile(`${homedir}/.aws/credentials`, (error, data) => {
       const availableProfiles = data
@@ -23,29 +16,42 @@ const attachEvents = (win) => {
   });
 
   ipcMain.on("invoke-lambda", (event, args) => {
+    console.log(args);
     const profile = args.profile || "default";
     const credentials = new AWS.SharedIniFileCredentials({
       profile,
     });
-    const lambda = new AWS.Lambda({
+    const lambdaConfig = {
       credentials,
-      region: "us-west-2",
-    });
+      region: args.region || "us-west-2",
+    };
+    if (args.endpoint) {
+      lambdaConfig.endpoint = args.endpoint;
+    }
+    const lambda = new AWS.Lambda(lambdaConfig);
     AWS.config.credentials = credentials;
+    console.log(lambdaConfig);
     lambda.invoke(
       {
-        FunctionName: "",
-        Payload: "{}",
+        FunctionName: args.functionName,
+        Payload: args.payload,
       },
       function (err, data) {
+        console.log(err, data);
+        let response;
+        let status;
+        console.log(err, data);
         if (err) {
-          console.log(err, err.stack);
+          status = err.statusCode || "Failed";
+          response = err.message;
         } else {
-          win.webContents.send("lambda-response", {
-            status: data.StatusCode,
-            response: data.Payload,
-          });
+          status = data.StatusCode;
+          response = data.Payload;
         }
+        win.webContents.send("lambda-response", {
+          status,
+          response,
+        });
       }
     );
   });
